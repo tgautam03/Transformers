@@ -2,12 +2,15 @@ import numpy as np
 from manim import *
 import pickle
 
+from manim_ml.neural_network import NeuralNetwork, FeedForwardLayer
+
 from utils import remove_invisible_chars
+
 
 class Dataset(Scene):
     def construct(self):
         # Setting background colour
-        self.camera.background_color = "#282a36"
+        # self.camera.background_color = "#282a36"
         # Self Attention box
         title = Text("Self Attention")
         box = SurroundingRectangle(title, color=WHITE, buff=MED_LARGE_BUFF)
@@ -345,6 +348,75 @@ class SelfAttentionOp(Scene):
         self.play(pos_encode_code.code[2].animate.set_opacity(1))
         self.wait(1)
         self.play(pos_encode_code.code[3].animate.set_opacity(1))
+        self.wait(1)
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects]
+        )
+        self.wait(1)
+        
+        return super().construct()
+    
+class QueryKeyValue(Scene):
+    def construct(self):
+        # Self Attention Operation
+        W = MathTex(r"W = \text{softmax}",r"(\frac{X \cdot X^T}{\sqrt{\text{emb}}})").to_edge(UP)
+        Y = MathTex(r"Y = W \cdot", r"X").next_to(W, DOWN)
+        self.play(Write(W), Write(Y))
+        self.wait(1)
+
+        text = Text("There's no Machine Learning here...").scale(0.5).shift(2*DOWN)
+        self.play(Write(text))
+        self.wait(1)
+        self.play(FadeOut(text))
+
+        # Query Key Value
+        self.play(W[1][1].animate.scale(1.25).set_color(RED), 
+                  W[1][3:5].animate.scale(1.25).set_color(GREEN),
+                  Y[1].animate.scale(1.25).set_color(BLUE))
+        self.wait(1)
+        nn1 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
+                            FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=3)
+                            ]).next_to(Y, DOWN)
+        nn2 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
+                            FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=3)
+                            ]).next_to(nn1, DOWN)
+        nn3 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
+                            FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=3)
+                            ]).next_to(nn2, DOWN)
+        X = MathTex("X").next_to(nn2, LEFT).shift(2*LEFT)
+        in1 = Arrow(start = X.get_edge_center(RIGHT), end=nn1.get_edge_center(LEFT))
+        in2 = Arrow(start = X.get_edge_center(RIGHT), end=nn2.get_edge_center(LEFT))
+        in3 = Arrow(start = X.get_edge_center(RIGHT), end=nn3.get_edge_center(LEFT))
+        self.play(Write(X), 
+                  W[1][1].animate.scale(1/1.25), 
+                  W[1][3:5].animate.scale(1/1.25), 
+                  Y[1].animate.scale(1/1.25))
+        self.add(nn1, nn2, nn3)
+        self.play(Create(in1), Create(in2), Create(in3))
+        out1 = Arrow(start = nn1.get_edge_center(RIGHT), end=nn1.get_edge_center(RIGHT)+2*RIGHT)
+        out2 = Arrow(start = nn2.get_edge_center(RIGHT), end=nn2.get_edge_center(RIGHT)+2*RIGHT)
+        out3 = Arrow(start = nn3.get_edge_center(RIGHT), end=nn3.get_edge_center(RIGHT)+2*RIGHT)
+        Q = Text("Query", color=RED).next_to(out1, RIGHT)
+        K = Text("Key", color=GREEN).next_to(out2, RIGHT)
+        V = Text("Value", color=BLUE).next_to(out3, RIGHT)
+        self.play(nn1.make_forward_pass_animation(), run_time=1)
+        self.play(Create(out1), Write(Q[0][0]))
+        self.play(nn2.make_forward_pass_animation(), run_time=1)
+        self.play(Create(out2), Write(K[0][0]))
+        self.play(nn3.make_forward_pass_animation(), run_time=1)
+        self.play(Create(out3), Write(V[0][0]))
+        self.wait(1)
+        self.play(Write(Q[1:]), Write(K[1:]), Write(V[1:]))
+        self.wait(1)
+        W_ = MathTex(r"W = \text{softmax}",r"(\frac{Q \cdot K^T}{\sqrt{\text{emb}}})").to_edge(UP)
+        Y_ = MathTex(r"Y = W \cdot", r"V").next_to(W_, DOWN)
+        W_[1][1].color = RED
+        W_[1][3:5].color = GREEN
+        Y_[1].color = BLUE
+        self.play(TransformMatchingTex(W, W_), TransformMatchingTex(Y, Y_))
         self.wait(1)
         self.play(
             *[FadeOut(mob)for mob in self.mobjects]

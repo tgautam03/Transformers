@@ -49,3 +49,5 @@ Writing this as a python function is pretty straight forward. For the given inpu
 
 ## Bringing Learning to Self Attention
 As you can see that the Self Attention operation isn't that complicated. However, you might be thinking, that where is Machine Learning??? Well, in theory Self Attention has nothing to do with Machine Learning but we can modify this framework to encorporate Machine Learning. Let's see how we can do that...
+
+If you look carefully, there are three ways in which the input matrix X is being used in self attention. Instead of using X as it is, if we send this matrix through three separate neural nets and then apply self attention to the outputs, we can incorporate learning from data in the self attention. By the way, these three output matrices are called Query, Key and Value! Transformers have some historical baggage associated with them and that lead to this Query, Key and Value name. In any case, it's irrelevant as far as the mathematics or the technique is concerned. So finally with this we have a self attention mechanism that can actually learn from data.
