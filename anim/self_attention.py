@@ -418,9 +418,90 @@ class QueryKeyValue(Scene):
         Y_[1].color = BLUE
         self.play(TransformMatchingTex(W, W_), TransformMatchingTex(Y, Y_))
         self.wait(1)
-        self.play(
-            *[FadeOut(mob)for mob in self.mobjects]
-        )
+        self.play(FadeOut(X, in1, in2, in3, nn1, nn2, nn3, out1, out2, out3, Q, K, V))
         self.wait(1)
-        
+
+        # Viz Self Attention
+        with open ('review1.pkl', 'rb') as fp:
+            review1 = pickle.load(fp)
+        review1 = Text(review1[:54]).scale(0.5).next_to(Y_, DOWN)
+        self.play(Write(review1))
+        nn1 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
+                            FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=3)
+                            ]).next_to(review1, DOWN)
+        nn2 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
+                            FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=3)
+                            ]).next_to(nn1, LEFT).shift(LEFT)
+        nn3 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
+                            FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=3)
+                            ]).next_to(nn1, RIGHT).shift(RIGHT)
+        Q = Text("Q", color=RED).scale(0.5).next_to(nn2, DOWN)
+        K = Text("K", color=GREEN).scale(0.5).next_to(nn1, DOWN)
+        V = Text("V", color=BLUE).scale(0.5).next_to(nn3, DOWN)
+        self.play(Create(nn1), Create(nn2), Create(nn3))
+        self.play(Write(Q), Write(K), Write(V))
+        box = SurroundingRectangle(W_)
+        W_op = MathTex(r"\otimes").next_to(Q, RIGHT).shift(0.6*RIGHT)
+        connect1 = Line(start=Q.get_edge_center(RIGHT), end=W_op.get_edge_center(LEFT))
+        connect2 = Line(start=K.get_edge_center(LEFT), end=W_op.get_edge_center(RIGHT))
+        W = MathTex(r"W").scale(0.5).next_to(W_op, DOWN).shift(0.5*DOWN)
+        connect3 = Line(start=W_op.get_edge_center(DOWN), end=W.get_edge_center(UP)+0.05*UP)
+        self.play(Create(box))
+        self.play(ReplacementTransform(box, VGroup(connect1, connect2, W_op, connect3, W)))
+        self.wait(1)
+        box2 = SurroundingRectangle(Y_)
+        Y_op = MathTex(r"\odot").next_to(V, DOWN).shift(0.5*DOWN)
+        connect4 = Line(start=W.get_edge_center(RIGHT), end=Y_op.get_edge_center(LEFT))
+        connect5 = Line(start=V.get_edge_center(DOWN), end=Y_op.get_edge_center(UP))
+        Y = MathTex(r"Y").scale(0.5).next_to(Y_op, DOWN).shift(0.5*DOWN)
+        connect6 = Line(start=Y_op.get_edge_center(DOWN), end=Y.get_edge_center(UP)+0.05*UP)
+        self.play(Create(box2))
+        self.play(ReplacementTransform(box2, VGroup(connect4, connect5, Y_op, connect6, Y)))
+        self.wait(1)
+        self.play(FadeOut(W_, Y_))
+        X_shape = MathTex(r"(\text{num words} \times \text{emb dim})").scale(0.5).next_to(review1, UP)
+        K_shape = MathTex(r"(\text{num words} \times \text{emb dim})", color=GREEN).scale(0.5).next_to(K, DOWN).shift(0.25*RIGHT)
+        Q_shape = MathTex(r"(\text{num words} \times \text{emb dim})", color=RED).scale(0.5).next_to(Q, LEFT)
+        V_shape = MathTex(r"(\text{num words} \times \text{emb dim})", color=BLUE).scale(0.5).next_to(V, RIGHT)
+        W_shape = MathTex(r"(\text{num words} \times \text{num words})").scale(0.5).next_to(W, DOWN).shift(RIGHT)
+        Y_shape = MathTex(r"(\text{num words} \times \text{emb dim})").scale(0.5).next_to(Y, RIGHT)
+        self.play(Write(X_shape))
+        self.wait(1)
+        self.play(Write(K_shape), Write(Q_shape), Write(V_shape))
+        self.wait(1)
+        self.play(Write(W_shape))
+        self.wait(1)
+        self.play(VGroup(review1, Q, K, V, W_op, 
+                         connect1, connect2, connect3, connect4, connect5, connect6,
+                         W, Y, Y_op, X_shape, K_shape, Q_shape, V_shape, W_shape, Y_shape).animate.to_edge(UP),
+                         nn1.animate.shift(1.6*UP), nn2.animate.shift(1.6*UP), nn3.animate.shift(1.6*UP))
+        W_viz = ImageMobject("img/W_viz.png").scale(0.8).next_to(W, LEFT).to_edge(DOWN).shift(0.35*LEFT+0.25*DOWN)
+        self.play(FadeIn(W_viz))
+        self.wait(1)
+        circ1 = Circle(radius=0.3, color=GREEN).shift(2.64*DOWN+5.88*LEFT)
+        self.play(Create(circ1))
+        self.wait(1)
+        circ2 = Circle(radius=0.3, color=GREEN).shift(3.4*DOWN+3.67*LEFT)
+        self.play(Create(circ2))
+        self.wait(1)
+        rect2 = Rectangle(height=0.4, width=4.5, color=RED).shift(4.65*LEFT+0.45*DOWN)
+        self.play(Create(rect2))
+        self.wait(1)
+        rect1 = Rectangle(height=0.4, width=4.5, color=RED).shift(4.65*LEFT+1.5*DOWN)
+        self.play(Create(rect1))
+        self.wait(1)
+        self.play(Write(Y_shape))
+        self.wait(1)
+        self.play(FadeOut(VGroup(review1, Q, K, V, W_op, 
+                         connect1, connect2, connect3, connect4, connect5, connect6,
+                         W, Y, Y_op, X_shape, K_shape, Q_shape, V_shape, W_shape, Y_shape), nn1, nn2, nn3))
+        comment = Text("What about this lack of attention to detail???").scale(0.5).next_to(W_viz, RIGHT)
+        self.play(Write(comment))
+        self.wait(1)
+        title = Text("Multi-Head Attention").to_edge(UP)
+        self.play(Write(title), FadeOut(W_viz, comment, circ1, circ2, rect1, rect2))
+        self.wait(1)
         return super().construct()
