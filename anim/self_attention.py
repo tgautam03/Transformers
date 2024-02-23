@@ -374,17 +374,14 @@ class QueryKeyValue(Scene):
                   W[1][3:5].animate.scale(1.25).set_color(GREEN),
                   Y[1].animate.scale(1.25).set_color(BLUE))
         self.wait(1)
-        nn1 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
-                            FeedForwardLayer(num_nodes=5),
-                            FeedForwardLayer(num_nodes=3)
+        nn1 = NeuralNetwork([FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=5)
                             ]).next_to(Y, DOWN)
-        nn2 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
-                            FeedForwardLayer(num_nodes=5),
-                            FeedForwardLayer(num_nodes=3)
+        nn2 = NeuralNetwork([FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=5)
                             ]).next_to(nn1, DOWN)
-        nn3 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
-                            FeedForwardLayer(num_nodes=5),
-                            FeedForwardLayer(num_nodes=3)
+        nn3 = NeuralNetwork([FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=5)
                             ]).next_to(nn2, DOWN)
         X = MathTex("X").next_to(nn2, LEFT).shift(2*LEFT)
         in1 = Arrow(start = X.get_edge_center(RIGHT), end=nn1.get_edge_center(LEFT))
@@ -426,17 +423,14 @@ class QueryKeyValue(Scene):
             review1 = pickle.load(fp)
         review1 = Text(review1[:54]).scale(0.5).next_to(Y_, DOWN)
         self.play(Write(review1))
-        nn1 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
-                            FeedForwardLayer(num_nodes=5),
-                            FeedForwardLayer(num_nodes=3)
+        nn1 = NeuralNetwork([FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=5)
                             ]).next_to(review1, DOWN)
-        nn2 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
-                            FeedForwardLayer(num_nodes=5),
-                            FeedForwardLayer(num_nodes=3)
+        nn2 = NeuralNetwork([FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=5)
                             ]).next_to(nn1, LEFT).shift(LEFT)
-        nn3 = NeuralNetwork([FeedForwardLayer(num_nodes=3),
-                            FeedForwardLayer(num_nodes=5),
-                            FeedForwardLayer(num_nodes=3)
+        nn3 = NeuralNetwork([FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=5)
                             ]).next_to(nn1, RIGHT).shift(RIGHT)
         Q = Text("Q", color=RED).scale(0.5).next_to(nn2, DOWN)
         K = Text("K", color=GREEN).scale(0.5).next_to(nn1, DOWN)
@@ -463,7 +457,7 @@ class QueryKeyValue(Scene):
         self.wait(1)
         self.play(FadeOut(W_, Y_))
         X_shape = MathTex(r"(\text{num words} \times \text{emb dim})").scale(0.5).next_to(review1, UP)
-        K_shape = MathTex(r"(\text{num words} \times \text{emb dim})", color=GREEN).scale(0.5).next_to(K, DOWN).shift(0.25*RIGHT)
+        K_shape = MathTex(r"(\text{num words} \times \text{emb dim})", color=GREEN).scale(0.5).next_to(K, DOWN).shift(0.55*RIGHT)
         Q_shape = MathTex(r"(\text{num words} \times \text{emb dim})", color=RED).scale(0.5).next_to(Q, LEFT)
         V_shape = MathTex(r"(\text{num words} \times \text{emb dim})", color=BLUE).scale(0.5).next_to(V, RIGHT)
         W_shape = MathTex(r"(\text{num words} \times \text{num words})").scale(0.5).next_to(W, DOWN).shift(RIGHT)
@@ -481,16 +475,16 @@ class QueryKeyValue(Scene):
         W_viz = ImageMobject("img/W_viz.png").scale(0.8).next_to(W, LEFT).to_edge(DOWN).shift(0.35*LEFT+0.25*DOWN)
         self.play(FadeIn(W_viz))
         self.wait(1)
-        circ1 = Circle(radius=0.3, color=GREEN).shift(2.64*DOWN+5.88*LEFT)
+        circ1 = Circle(radius=0.3, color=GREEN).shift(2.64*DOWN+5.4*LEFT)
         self.play(Create(circ1))
         self.wait(1)
-        circ2 = Circle(radius=0.3, color=GREEN).shift(3.4*DOWN+3.67*LEFT)
+        circ2 = Circle(radius=0.3, color=GREEN).shift(3.4*DOWN+3.25*LEFT)
         self.play(Create(circ2))
         self.wait(1)
-        rect2 = Rectangle(height=0.4, width=4.5, color=RED).shift(4.65*LEFT+0.45*DOWN)
+        rect2 = Rectangle(height=0.4, width=4.5, color=RED).shift(4.5*LEFT+0.45*DOWN)
         self.play(Create(rect2))
         self.wait(1)
-        rect1 = Rectangle(height=0.4, width=4.5, color=RED).shift(4.65*LEFT+1.5*DOWN)
+        rect1 = Rectangle(height=0.4, width=4.5, color=RED).shift(4.5*LEFT+1.5*DOWN)
         self.play(Create(rect1))
         self.wait(1)
         self.play(Write(Y_shape))
@@ -688,5 +682,11 @@ class CodingMultiHeadAttention(Scene):
         self.play(
             *[FadeOut(mob)for mob in self.mobjects]
         )
+        self.wait(1)
+        return super().construct()
+    
+class Transformer(Scene):
+     def construct(self):
+        
         self.wait(1)
         return super().construct()

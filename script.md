@@ -60,3 +60,5 @@ We know that in single head attention, an input matrix is sent through 3 NNs to 
 As Feynman once said, "What I cannot create, I donot understand". So, let's code Self Attention! The input is a 3D Tensor with b representing the batch size or the number of reviews in this case, t are the number of words in the review and k is the vector representing each word. Another thing we have to ensure is that the number of heads divides the embedding length evenly!  Now we can define the three neural nets and pass the input tensor through them to get Query, Key and Value. Next, we perform the slicing operation to split these three large tensors into multiple heads. Remember that self attention on different heads can be performed in parallel, and to facilitate this, I'll just roll the dimension representing different heads into the batch one. Finally comes the parallel self attention which gives different output tensors, followed by concatenation of different heads. Finally, the unifying Neural net layer which gives the final output.
 
 Now, we can use this code to build a Transformer and train it on IMDB dataset.
+
+## Transformers
