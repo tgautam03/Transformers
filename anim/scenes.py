@@ -6,6 +6,48 @@ from manim_ml.neural_network import NeuralNetwork, FeedForwardLayer
 
 from utils import remove_invisible_chars
 
+class Motivation(Scene):
+    def construct(self):
+        # self.camera.background_color = "#282a36"
+        self.wait(1)
+        attention_paper = ImageMobject("anim_data/img/Attention_is_all_you_need.png").to_edge(LEFT)
+        self.add(attention_paper)
+        self.wait(1)
+        gpt1 = SVGMobject("anim_data/img/openai.svg").scale(0.5).next_to(attention_paper).shift(1.5*UP+RIGHT).set_color(WHITE)
+        gpt1_text = Text("GPT-1 (Released 2018)").scale(0.5).next_to(gpt1, RIGHT)
+        self.add(gpt1)
+        self.play(Write(gpt1_text))
+        self.wait(1)
+        gpt2 = SVGMobject("anim_data/img/openai.svg").scale(0.5).next_to(attention_paper).shift(RIGHT).set_color(WHITE)
+        gpt2_text = Text("GPT-2 (Released 2019)").scale(0.5).next_to(gpt2, RIGHT)
+        self.add(gpt2)
+        self.play(Write(gpt2_text))
+        self.wait(1)
+        gpt3 = SVGMobject("anim_data/img/openai.svg").scale(0.5).next_to(attention_paper).shift(1.5*DOWN+RIGHT).set_color(WHITE)
+        gpt3_text = Text("GPT-3 (Released 2020)").scale(0.5).next_to(gpt3, RIGHT)
+        self.add(gpt3)
+        self.play(Write(gpt3_text))
+        self.wait(1)
+        self.remove(attention_paper)
+        self.play(VGroup(gpt1, gpt1_text, gpt2, gpt2_text, gpt3, gpt3_text).animate.to_edge(LEFT))
+        chatgpt = SVGMobject("anim_data/img/openai.svg").scale(1).set_color(GREEN)
+        chatgpt_text = Text("ChatGPT").scale(1).next_to(chatgpt, DOWN)
+        self.add(chatgpt)
+        self.play(Write(chatgpt_text))
+        self.wait(1)
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects]
+        )
+        goal1 = Rectangle(height=5, width=6.5).to_edge(LEFT)
+        self.play(Create(goal1))
+        self.wait(1)
+        goal2 = Rectangle(height=5, width=6.5).to_edge(RIGHT)
+        self.play(Create(goal2))
+        self.wait(1)
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects]
+        )
+        self.wait(1)
 
 class Dataset(Scene):
     def construct(self):
@@ -687,6 +729,61 @@ class CodingMultiHeadAttention(Scene):
     
 class Transformer(Scene):
      def construct(self):
+        # Loading code
+        transformer_code = Code(file_name="fn_transformer.py", language="Python", font="Monospace", insert_line_no=False,
+                            style="dracula", line_spacing=1).scale(0.3).to_edge(RIGHT)
+        transformer_code.code = remove_invisible_chars(transformer_code.code)
+        self.play(Create(transformer_code[0]), Create(transformer_code.code[:4]), Create(transformer_code.code[25]))
+        self.wait(1)
         
+        # 5 Steps to Transformers
+        title = Text("5 Steps to Transformers").scale(0.85).to_edge(UP).to_edge(LEFT)
+        self.play(Write(title))
+        bp = BulletedList("Token Embedding", 
+                          "Positional Embedding",
+                          "Self Attention",
+                          "Fully Connected Network",
+                          "Output").scale(0.75).next_to(title,DOWN).shift(0.5*DOWN)
+        self.play(Write(bp[0]), Write(transformer_code.code[4:7]), Write(transformer_code.code[26:30]))
+        self.wait(1)
+        self.play(Write(bp[1]), Write(transformer_code.code[7:10]), Write(transformer_code.code[30:34]))
+        self.wait(1)
+        self.play(Write(bp[2]), Write(transformer_code.code[10:12]), Write(transformer_code.code[34:36]))
+        self.wait(1)
+        self.play(Write(bp[3]), Write(transformer_code.code[12:23]), Write(transformer_code.code[36:40]))
+        self.wait(1)
+        self.play(Write(bp[4]), Write(transformer_code.code[23]), Write(transformer_code.code[40:]))
+        self.wait(1)
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects]
+        )
+        self.wait(1)
+
+        # Training
+        # Loading code
+        training_code = Code(file_name="fn_train.py", language="Python", font="Monospace", insert_line_no=False,
+                            style="dracula", line_spacing=1).scale(0.3).to_edge(RIGHT)
+        training_code.code = remove_invisible_chars(training_code.code)
+        self.play(Create(training_code[0]))
+        self.play(Write(training_code.code))
+        self.wait(1)
+        acc = np.load("acc.npy")
+        
+        def get_acc(x):
+            return acc[x]
+            
+        ax = Axes(
+            x_range=[0, len(acc)-1, 1], y_range=[0.4, 1, 0.1], # [start, stop, step_size]
+            y_axis_config={"include_tip": False, "include_numbers": True},
+            x_axis_config={"include_numbers": False, "include_ticks": False, 
+                           "include_tip": True, "label_direction": DOWN}, 
+            tips=False
+            )
+        labels = ax.get_axis_labels(x_label="Epochs", y_label="Accuracy")
+        VGroup(ax, labels).scale(0.5).to_edge(LEFT)
+        graph = ax.plot(lambda x: get_acc(int(x)), stroke_width=1)
+        self.play(Create(VGroup(ax, labels)))
+        self.wait(1)
+        self.play(Write(graph), run_time=20)
         self.wait(1)
         return super().construct()

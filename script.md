@@ -1,5 +1,5 @@
 # Motivation
-The year was 2017 when a research paper introducing Transformers was published. Looking back, this was the moment that changed the field of AI forever as it led to the development of Generative Pre-trained Transformers or GPT for short. Yes, ChatGPT is an application that has GPT-3 at it’s core. All this might look intimidating, but the concepts behind Transformer are very simple.
+The year was 2017 when a research paper introducing Transformers was published. Looking back, this was probably the moment that changed the field of AI forever as it led to the development of Generative Pre-trained Transformers or GPT. Yes, ChatGPT is an application that has GPT-3 at it’s core. All this might look intimidating, but the concepts behind Transformer are very simple.
 
 This video has two main goals:
 - Explain Transformers and it’s various components, and then
@@ -61,4 +61,14 @@ As Feynman once said, "What I cannot create, I donot understand". So, let's code
 
 Now, we can use this code to build a Transformer and train it on IMDB dataset.
 
-## Transformers
+# Transformers
+There are 5 steps to Transformers:
+- Everything starts with Token Embedding where each word is represented as a vector. 
+- We then add positional information to these vectors using Positional Embedding
+- which is followed by Self Attention
+- and then a Fully Connected Network
+- which leads to the output
+
+So, I trained a Transformer on IMDB dataset for 20 epochs. As you can see I selected the embedding dimension to be 32 and 4 heads for the self attention. Here is the plot showing accuracy on the test dataset after each update and you can see the accuracy increasing as the network trains. 
+
+I am provided the complete code for the Transformer NN and would encourage you to try it out yourself. That's it for today, and I'll see you next time...
