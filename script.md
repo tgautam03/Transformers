@@ -15,31 +15,6 @@ Everything starts with the dataset. For the illustration, I’m using the simple
 
 We know that the computers can't make sense of text. The only thing they understand is numbers. So we have to find a way to represent each word as a number. A very common way to do that is to collect all the individual words in the dataset and store them to create a vocabulary. Now we can simply assign all of them a unique number. Looking at this vocabulary, we can map any review to a set of numbers. So, now we have a bunch of sequences of numbers that esentially represent a sentence. But there's a problem with this. All these are of different lengths and to feed these into a transformer and utilize the parallelism, these have to be of same lengths. This is done by simply padding each sequence with zeros at the end.
 
-```py
-vocabulary1 = ' '.join(word for word in vocab.get_itos()[2:95])
-vocabulary2 = ' '.join(word for word in vocab.get_itos()[95:202])
-
-import pickle
-
-with open('../anim/vocab1.pkl', 'wb') as fp:
-    pickle.dump(vocabulary1, fp)
-with open('../anim/vocab2.pkl', 'wb') as fp:
-    pickle.dump(vocabulary2, fp)
-
-num_vocabulary1 = list(map(str, np.arange(0, 121).tolist()))
-num_vocabulary2 = list(map(str, np.arange(len(vocab)-114, len(vocab)).tolist()))
-
-num_vocabulary1 = ' '.join(word for word in num_vocabulary1)
-num_vocabulary2 = ' '.join(word for word in num_vocabulary2)
-
-import pickle
-
-with open('../anim/num_vocab1.pkl', 'wb') as fp:
-    pickle.dump(num_vocabulary1, fp)
-with open('../anim/num_vocab2.pkl', 'wb') as fp:
-    pickle.dump(num_vocabulary2, fp)
-```
-
 To undertand how self attention works, let's just look at one of these sequences and only consider the first five words. Now representing each word with a single number is ok, but it doesn't convey much information. It's a lot better if we can write each word as a vector of say length 7 rather than just a single number. I'm picking 7 as an arbitrary number and you can choose something else we well. This can be done using Embedding class from PyTorch itself. Now, there are a lot of things that I can say about this Embedding class, but I won't go down the rabbit hole and for the purpose of this video, just think of this as another unique mapping from an integer to a floating point vector of desired length based on the vocabulary size. So, just to recap, we have now transformed and stored the review in form of a tensor of shape 1 x 5 x 7, where 1 is because I'm only looking at 1 review and 5 is for the number of words in this review and 7 is the embedding dimension. By the way, if you want to check out the code 
 
 ## Self Attention Operation
@@ -69,6 +44,33 @@ There are 5 steps to Transformers:
 - and then a Fully Connected Network
 - which leads to the output
 
-So, I trained a Transformer on IMDB dataset for 20 epochs. As you can see I selected the embedding dimension to be 32 and 4 heads for the self attention. Here is the plot showing accuracy on the test dataset after each update and you can see the accuracy increasing as the network trains. 
+So, I trained a Transformer on IMDB dataset for 20 epochs. As you can see I selected the embedding dimension to be 32 and used 4 heads for the self attention. Here is the plot showing accuracy on the test dataset after each update and you can see the accuracy increasing as the network trains. 
 
-I am provided the complete code for the Transformer NN and would encourage you to try it out yourself. That's it for today, and I'll see you next time...
+BTW I am provided the complete code for the Transformer NN and would encourage you to try it out yourself. That's it for today, please let me know what you think down in the comments and I'll see you next time...
+
+
+# Some Code Snippets
+```py
+vocabulary1 = ' '.join(word for word in vocab.get_itos()[2:95])
+vocabulary2 = ' '.join(word for word in vocab.get_itos()[95:202])
+
+import pickle
+
+with open('../anim/vocab1.pkl', 'wb') as fp:
+    pickle.dump(vocabulary1, fp)
+with open('../anim/vocab2.pkl', 'wb') as fp:
+    pickle.dump(vocabulary2, fp)
+
+num_vocabulary1 = list(map(str, np.arange(0, 121).tolist()))
+num_vocabulary2 = list(map(str, np.arange(len(vocab)-114, len(vocab)).tolist()))
+
+num_vocabulary1 = ' '.join(word for word in num_vocabulary1)
+num_vocabulary2 = ' '.join(word for word in num_vocabulary2)
+
+import pickle
+
+with open('../anim/num_vocab1.pkl', 'wb') as fp:
+    pickle.dump(num_vocabulary1, fp)
+with open('../anim/num_vocab2.pkl', 'wb') as fp:
+    pickle.dump(num_vocabulary2, fp)
+```

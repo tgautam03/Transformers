@@ -189,16 +189,16 @@ class Dataset(Scene):
         self.wait(1)
 
         self.play(FadeOut(comment1, padded_num_review4, padded_num_review3, padded_num_review2, vdots, padded_num_review1[10:]))
-        ex_review = VGroup(Text("14"),
-                           Text("19"),
-                           Text("10"),
-                           Text("59"),
-                           Text("57")).scale(0.5).arrange(DOWN, aligned_edge=LEFT)
+        ex_review = VGroup(Text("14", color=RED_A),
+                           Text("19", color=GREEN_A),
+                           Text("10", color=BLUE_A),
+                           Text("59", color=ORANGE),
+                           Text("57", color=YELLOW)).scale(0.5).arrange(DOWN, aligned_edge=LEFT)
         self.play(ReplacementTransform(padded_num_review1[:10], ex_review))
         self.wait(1)
 
         emb_token = np.load("ex_review_emb.npy")
-        ex_review_emb = Matrix(np.round(emb_token, 2), v_buff=1.5, h_buff=1.5).scale(0.35).next_to(title, DOWN).shift(0.75*DOWN)
+        ex_review_emb = Matrix(np.round(emb_token, 2), v_buff=1.5, h_buff=1.5).scale(0.35).set_row_colors(RED_A, GREEN_A, BLUE_A, ORANGE, YELLOW).next_to(title, DOWN).shift(0.75*DOWN)
         self.play(ReplacementTransform(ex_review, ex_review_emb))
         self.wait(1)
 
@@ -247,11 +247,11 @@ class SelfAttentionOp(Scene):
         t1 = Text("Total Reviews").scale(0.3).next_to(mat_dim[0], DOWN)
         t2 = Text("Total Words").scale(0.3).next_to(mat_dim[2], UP)
         t3 = Text("Embedding Size").scale(0.3).next_to(mat_dim[-1], DOWN)
-        self.add(title, ex_review_emb, mat_dim, t1, t2, t3)
+        self.add(ex_review_emb, mat_dim, t1, t2, t3)
         self.wait(1)
 
         # Self Attention
-        self.play(FadeOut(mat_dim, t1, t2, t3))
+        self.play(FadeOut(mat_dim, t1, t2, t3), Write(title))
         self.wait(1)
         word1 = Text("This", color=RED_A).scale(0.3).next_to(ex_review_emb.get_rows()[0], LEFT).shift(0.5*LEFT)
         word2 = Text("movie", color=GREEN_A).scale(0.3).next_to(ex_review_emb.get_rows()[1], LEFT).shift(0.35*LEFT)
@@ -750,9 +750,9 @@ class Transformer(Scene):
         self.wait(1)
         self.play(Write(bp[2]), Write(transformer_code.code[10:12]), Write(transformer_code.code[34:36]))
         self.wait(1)
-        self.play(Write(bp[3]), Write(transformer_code.code[12:23]), Write(transformer_code.code[36:40]))
+        self.play(Write(bp[3]), Write(transformer_code.code[12:22]), Write(transformer_code.code[36:40]))
         self.wait(1)
-        self.play(Write(bp[4]), Write(transformer_code.code[23]), Write(transformer_code.code[40:]))
+        self.play(Write(bp[4]), Write(transformer_code.code[22:24]), Write(transformer_code.code[40:]))
         self.wait(1)
         self.play(
             *[FadeOut(mob)for mob in self.mobjects]
@@ -779,11 +779,24 @@ class Transformer(Scene):
                            "include_tip": True, "label_direction": DOWN}, 
             tips=False
             )
-        labels = ax.get_axis_labels(x_label="Epochs", y_label="Accuracy")
+        labels = ax.get_axis_labels(x_label=r"\text{Epochs}", y_label=r"\text{Accuracy}")
         VGroup(ax, labels).scale(0.5).to_edge(LEFT)
         graph = ax.plot(lambda x: get_acc(int(x)), stroke_width=1)
         self.play(Create(VGroup(ax, labels)))
         self.wait(1)
         self.play(Write(graph), run_time=20)
         self.wait(1)
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects]
+        )
+
+        dialogue = Tex("Like", " and please do leave a", " Comment", "!").scale(1.25).shift(UP)
+        dialogue[0].set_color(RED)
+        dialogue[-2].set_color(GREEN)
+        self.play(Write(dialogue))
+        self.wait(2)
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects]
+        )
+        self.wait(2)
         return super().construct()
