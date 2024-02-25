@@ -240,9 +240,9 @@ class Dataset(Scene):
 class SelfAttentionOp(Scene):
     def construct(self):
         # Setting Scene
-        title = Text("Self Attention").to_edge(UP)
+        title = Text("IMDB Dataset").to_edge(UP)
         emb_token = np.load("ex_review_emb.npy")
-        ex_review_emb = Matrix(np.round(emb_token, 2), v_buff=1.5, h_buff=1.5).set_row_colors(RED_A, GREEN_A, BLUE_A, ORANGE, YELLOW).scale(0.4).next_to(title, DOWN).shift(0.75*DOWN)
+        ex_review_emb = Matrix(np.round(emb_token, 2), v_buff=1.5, h_buff=1.5).scale(0.35).set_row_colors(RED_A, GREEN_A, BLUE_A, ORANGE, YELLOW).next_to(title, DOWN).shift(0.75*DOWN)
         mat_dim = Tex(r"1", r"$\times$", r"5", r"$\times$", r"7").scale(2).next_to(ex_review_emb, DOWN).shift(0.5*DOWN)
         t1 = Text("Total Reviews").scale(0.3).next_to(mat_dim[0], DOWN)
         t2 = Text("Total Words").scale(0.3).next_to(mat_dim[2], UP)
@@ -251,6 +251,7 @@ class SelfAttentionOp(Scene):
         self.wait(1)
 
         # Self Attention
+        title = Text("Self Attention").to_edge(UP)
         self.play(FadeOut(mat_dim, t1, t2, t3), Write(title))
         self.wait(1)
         word1 = Text("This", color=RED_A).scale(0.3).next_to(ex_review_emb.get_rows()[0], LEFT).shift(0.5*LEFT)
@@ -799,4 +800,52 @@ class Transformer(Scene):
             *[FadeOut(mob)for mob in self.mobjects]
         )
         self.wait(2)
+        return super().construct()
+     
+class Thumbnail(Scene):
+     def construct(self):
+        with open ('review1.pkl', 'rb') as fp:
+            review1 = pickle.load(fp)
+        review1 = Text(review1[:54]).scale(0.5).to_edge(UP)
+        nn1 = NeuralNetwork([FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=5)
+                            ]).next_to(review1, DOWN)
+        nn2 = NeuralNetwork([FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=5)
+                            ]).next_to(nn1, LEFT).shift(LEFT)
+        nn3 = NeuralNetwork([FeedForwardLayer(num_nodes=5),
+                            FeedForwardLayer(num_nodes=5)
+                            ]).next_to(nn1, RIGHT).shift(RIGHT)
+        Q = Text("Q", color=RED).scale(0.5).next_to(nn2, DOWN)
+        K = Text("K", color=GREEN).scale(0.5).next_to(nn1, DOWN)
+        V = Text("V", color=BLUE).scale(0.5).next_to(nn3, DOWN)
+        W_op = MathTex(r"\otimes").next_to(Q, RIGHT).shift(0.6*RIGHT)
+        connect1 = Line(start=Q.get_edge_center(RIGHT), end=W_op.get_edge_center(LEFT))
+        connect2 = Line(start=K.get_edge_center(LEFT), end=W_op.get_edge_center(RIGHT))
+        W = MathTex(r"W").scale(0.5).next_to(W_op, DOWN).shift(0.5*DOWN)
+        connect3 = Line(start=W_op.get_edge_center(DOWN), end=W.get_edge_center(UP)+0.05*UP)
+        Y_op = MathTex(r"\odot").next_to(V, DOWN).shift(0.5*DOWN)
+        connect4 = Line(start=W.get_edge_center(RIGHT), end=Y_op.get_edge_center(LEFT))
+        connect5 = Line(start=V.get_edge_center(DOWN), end=Y_op.get_edge_center(UP))
+        Y = MathTex(r"Y").scale(0.5).next_to(Y_op, DOWN).shift(0.5*DOWN)
+        connect6 = Line(start=Y_op.get_edge_center(DOWN), end=Y.get_edge_center(UP)+0.05*UP)
+        W_viz1 = ImageMobject("img/W_viz_4heads_1.png").scale(0.42).to_edge(LEFT).shift(0.25*DOWN)
+        W_viz2 = ImageMobject("img/W_viz_4heads_2.png").scale(0.42).next_to(W_viz1, RIGHT)
+        W_viz3 = ImageMobject("img/W_viz_4heads_3.png").scale(0.42).next_to(W_viz1, DOWN)
+        W_viz4 = ImageMobject("img/W_viz_4heads_4.png").scale(0.42).next_to(W_viz3, RIGHT)
+        with open ('review1.pkl', 'rb') as fp:
+            review1_ = pickle.load(fp)
+        review1_ = Text(review1_[:54]).scale(0.4).next_to(Y, DOWN).to_edge(RIGHT)
+        box1 = BackgroundRectangle(review1_[:4], color=GREEN, fill_opacity=0.25, buff=0.02)
+        box2 = BackgroundRectangle(review1_[4:9], color=GREEN, fill_opacity=0.5, buff=0.02)
+        box3 = BackgroundRectangle(review1_[15:19], color=GREEN, fill_opacity=0.5, buff=0.02)
+        box4 = BackgroundRectangle(review1_[23:33], color=YELLOW, fill_opacity=0.4, buff=0.02)
+        box5 = BackgroundRectangle(review1_[35:-1], color=YELLOW, fill_opacity=0.4, buff=0.02)
+        
+        self.add(review1, nn1, nn2, nn3, Q, K, V, 
+                 connect1, connect2, W_op, connect3, W,
+                 connect4, connect5, Y_op, connect6, Y,
+                 review1_, W_viz1, W_viz2, W_viz3, W_viz4,
+                 box1, box2, box3, box4, box5)
+        
         return super().construct()
